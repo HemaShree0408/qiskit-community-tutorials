@@ -1,0 +1,99 @@
+from PIL import Image
+import os
+import tkinter as tk
+from tkinter import filedialog
+
+def resize_image(input_image_path, output_image_path, size):
+    try:
+        original_image = Image.open(input_image_path)
+        resized_image = original_image.resize(size)
+        resized_image.save(output_image_path)
+        print("Image resized successfully.")
+    except Exception as e:
+        print(f"An error occurred while resizing the image: {e}")
+
+def compress_image():
+    input_path = filedialog.askopenfilename(title="Select Input Image")
+    if not input_path:
+        return
+    output_path = filedialog.asksaveasfilename(title="Save Resized Image As", defaultextension=".jpg")
+    if not output_path:
+        return
+    desired_width = int(input("Enter the desired width of the image: "))
+    desired_height = int(input("Enter the desired height of the image: "))
+    desired_size = (desired_width, desired_height)
+    resize_image(input_path, output_path, desired_size)
+    # Additional code for quantum processing if needed
+
+def compress_video():
+    input_path = filedialog.askopenfilename(title="Select Input Video")
+    if not input_path:
+        return
+    output_path = filedialog.asksaveasfilename(title="Save Compressed Video As", defaultextension=".mp4")
+    if not output_path:
+        return
+    crf = input("Enter the CRF value for compression (default is 23): ")
+    crf = crf if crf.isdigit() else '23'
+    try:
+        ffmpeg_cmd = f"ffmpeg -i {input_path} -c:v libx264 -crf {crf} {output_path}"
+        print(f"Executing FFmpeg command: {ffmpeg_cmd}")
+        status = os.system(ffmpeg_cmd)
+        if status == 0:
+            print("Video compression completed successfully.")
+        else:
+            print("Video compression failed.")
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
+def compress_audio():
+    input_audio_path = filedialog.askopenfilename(title="Select Input Audio")
+    if not input_audio_path:
+        return
+    output_audio_path = filedialog.asksaveasfilename(title="Save Compressed Audio As", defaultextension=".mp3")
+    if not output_audio_path:
+        return
+    bitrate = input("Enter the bitrate for compression (default is 128k): ")
+    bitrate = bitrate if bitrate.isdigit() else '128k'
+    try:
+        ffmpeg_cmd = f"ffmpeg -i {input_audio_path} -b:a {bitrate} {output_audio_path}"
+        print(f"Executing FFmpeg command: {ffmpeg_cmd}")
+        status = os.system(ffmpeg_cmd)
+        if status == 0:
+            print("Audio compression completed successfully.")
+        else:
+            print("Audio compression failed.")
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
+def main():
+    root = tk.Tk()
+    root.title("Data Compression")
+    root.configure(bg="#f0f0f0")  # Setting background color
+
+    # Creating buttons for different data types
+    image_button = tk.Button(root, text="Image Compression", command=compress_image, bg="#4CAF50", fg="white", font=('Helvetica', 12, 'bold'))
+    image_button.pack(pady=10)
+
+    video_button = tk.Button(root, text="Video Compression", command=compress_video, bg="#008CBA", fg="white", font=('Helvetica', 12, 'bold'))
+    video_button.pack(pady=10)
+
+    audio_button = tk.Button(root, text="Audio Compression", command=compress_audio, bg="#f44336", fg="white", font=('Helvetica', 12, 'bold'))
+    audio_button.pack(pady=10)
+
+    root.mainloop()
+def create_pre_page():
+    global pre_page
+    pre_page = tk.Tk()
+    pre_page.title("Qubit")
+    pre_page.geometry("300x200")
+    
+    title_label = tk.Label(pre_page, text="Qubit", font=("Helvetica", 20, "bold"))
+    title_label.pack(pady=20)
+    
+    enter_button = tk.Button(pre_page, text="Click to Enter", command=open_main_window)
+    enter_button.pack(pady=10)
+
+    pre_page.mainloop()
+
+if __name__ == "__main__":
+    main()
